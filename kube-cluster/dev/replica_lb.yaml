@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webpod3
+  namespace: devproject
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      apptype: web3
+      env: dev3
+  template:
+    metadata:
+      name: replicatemp
+      labels:
+        apptype: web3
+        env: dev3
+    spec:
+      containers:
+      - image: sudarshanlnx/neptune1:v1
+        name: webcontainer
+        imagePullPolicy: IfNotPresent
+        ports:
+        -  name: apache
+           containerPort: 80
+           protocol: TCP
+        resources:
+           requests:
+             memory: "40Mi"
+             cpu: "40m"
+           limits:
+             memory: "50Mi"
+             cpu: "50m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: loadbalancerservice  #service name (it can be any name)
+ namespace: devproject
+spec:
+ type: LoadBalancer
+ ports:
+ - name: apache
+   port: 80 #service port
+   targetPort: 80 #container port
+   protocol: TCP
+ selector:     #mapping to pod
+   apptype: web3
+   env: dev3
